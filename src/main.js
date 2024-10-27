@@ -1,24 +1,43 @@
-console.log("coneccted");
-/*API
-/*
- * https://dog.ceo/api/breed/hound/list
- * https://dog.ceo/api/breed/{breed}]/images/random
- */
+// === DOM Selection
+//
+//https://dog.ceo/dog-api/documentation/n
+const selectEl = document.querySelector("#dog-breeds");
+const imageEl = document.querySelector("#dog-image");
 
+// === Fetch
+// This function returns [breeds]
 function getDogsBreed() {
-    return fetch('https://dog.ceo/api/breeds/list/all')
-        .then((res) => res.json())
-        .then(data => Object.keys(data.message))
-        .catch(err => console.log(err));
+  return fetch(`https://dog.ceo/api/breeds/list/all`)
+    .then((res) => res.json())
+    .then((data) => Object.keys(data.message))
+    .catch((err) => console.log(err));
 }
 
-
-
-function renderoption() {
-    getDogsBreed().then(breeds => {
-        for (let breed of breeds) {
-            console.log(breed);
-        }
-    })
+function getDogImage(breed) {
+  return fetch(`https://dog.ceo/api/breed/${breed}/images/random`)
+    .then((res) => res.json())
+    .then((data) => data.message)
+    .catch((err) => console.log(err));
 }
-renderoption();
+
+// === Render
+// Renders the <option>
+function renderOptions() {
+  getDogsBreed().then((breeds) => {
+    for (let breed of breeds) {
+      const option = document.createElement("option");
+      option.textContent = breed[0].toUpperCase() + breed.slice(1);
+      option.value = breed;
+      selectEl.appendChild(option);
+    }
+  });
+}
+
+renderOptions();
+
+selectEl.addEventListener("change", (e) => {
+    const selectedValue = e.target.value;
+    console.log(selectedValue)
+
+  getDogImage(selectedValue).then((link) => (imageEl.src = link));
+});
